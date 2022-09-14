@@ -75,34 +75,31 @@ static int yapiLoadSymbol(const char *symbolName, void **symbol, YapiErrorMsg *e
 
 #else
 
-YapiResult yapiOpenDynamicLib(char* libName, void** handler)
+YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg* error)
 {
     *handler = dlopen(libName, RTLD_LAZY);
     if (!*handler) {
-        CodChar* errMsg = dlerror();
-        COD_SET_ERROR(ERR_CMM_LOAD_LIB_FAILED, libName, errMsg);
-        return COD_ERROR;
+        char* errMsg = dlerror();
+        yapiSetError(error, YAPI_ERR_LOAD_SYMBOL, "load yacli library error [%s]", errMsg);
+        return YAPI_ERROR;
     }
 
-    return COD_SUCCESS;
+    return YAPI_SUCCESS;
 }
 
-CodResult codDynamicLibClose(CodPointer* handler)
+YapiResult yapiCloseDynamicLib(YapiPointer* handler, YapiErrorMsg* error)
 {
-    if (*handler == NULL) {
-        return COD_SUCCESS;
-    }
-    CodInt32 ret = dlclose(*handler);
-    if (ret != COD_SUCCESS) {
-        CodChar* errMsg = dlerror();
-        COD_SET_ERROR(ERR_CMM_CLOSE_LIB_FAILED, errMsg);
-        return COD_ERROR;
+    int32_t ret = dlclose(*handler);
+    if (ret != YAPI_SUCCESS) {
+        char* errMsg = dlerror();
+        yapiSetError(error, errno, errMsg);
+        return YAPI_ERROR;
     }
     *handler = NULL;
-    return COD_SUCCESS;
+    return YAPI_SUCCESS;
 }
 
-static int yapiLoadSymbol(YapiSymbols* funcs, const char *symbolName, void **symbol, YapiErrorMsg *error)
+static int yapiLoadSymbol(const char *symbolName, void **symbol, YapiErrorMsg *error)
 {
     *symbol = dlsym(yapiLibHandle, symbolName);
     if (!*symbol) {

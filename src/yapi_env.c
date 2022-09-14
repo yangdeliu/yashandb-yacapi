@@ -1,4 +1,5 @@
 #include "yapi_inc.h"
+#include "stdlib.h"
 
 YapiResult yapiAllocEnv(YapiEnv** inst)
 {
