@@ -1,5 +1,6 @@
 #include "yapi_inc.h"
 #include "stdlib.h"
+#include "string.h"
 
 YapiResult yapiConnect(YapiEnv* env, const char* url, int16_t urlLength, const char* user, int16_t userLength,
                      const char* password, int16_t passwordLength, YapiConnect** hConn)
@@ -14,6 +15,7 @@ YapiResult yapiConnect(YapiEnv* env, const char* url, int16_t urlLength, const c
     if (yapiCliConnect(conn->connHandler, url,urlLength, user, userLength,password,passwordLength) != YAPI_SUCCESS) {
         return YAPI_ERROR;
     }
+    *hConn = conn;
     return YAPI_SUCCESS;
 }
 
@@ -49,10 +51,20 @@ YapiResult yapiSetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, i
 
 YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, int32_t bufLength, int32_t* stringLength)
 {
-    return YAPI_ERROR;
+    return yapiCliGetConnAttr(hConn->connHandler,attr, value, bufLength,stringLength);
 }
 
 void  yapiGetLastError(YapiErrorInfo* info)
 {
-
+    char* msg, *stat;
+    if(yapiCliGetLastError(&info->errCode, &msg, &stat, &info->pos) != YAPI_SUCCESS){
+        info->errCode = -1;
+        info->pos.column = -1;
+        info->pos.line = -1;
+        strcpy(info->message, "get error failed");
+        strcpy(info->sqlState, "00000");
+    } else {
+        strcpy(info->message, msg);
+        strcpy(info->sqlState, stat);
+    }
 }

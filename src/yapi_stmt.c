@@ -13,6 +13,7 @@ YapiResult yapiPrepare(YapiConnect* hConn, const char* sql, int32_t sqlLength, Y
     if (yapiCliPrepare(stmt->stmtHandler, sql, sqlLength) != YAPI_SUCCESS) {
         return YAPI_ERROR;
     }
+    *hStmt = stmt;
     return YAPI_SUCCESS;
 }
 

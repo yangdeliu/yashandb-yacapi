@@ -42,6 +42,7 @@ YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg*
 {
     *handler = LoadLibrary(libName);
     if(*handler != NULL) {
+        yapiLibHandle = handler;
         return YAPI_SUCCESS;
     }
 
@@ -84,6 +85,7 @@ YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg*
         return YAPI_ERROR;
     }
 
+    yapiLibHandle = *handler;
     return YAPI_SUCCESS;
 }
 
@@ -144,8 +146,8 @@ YapiResult yapiCliGetLastError(int32_t* errCode, char** message, char** sqlState
 {
     YapiErrorMsg *error = NULL;
 
-    YAPI_LOAD_SYMBOL("yacGetGetVersion", yapiSymbols.fnGetVersion)
-    (*yapiSymbols.fnGetVersion)(errCode, message, sqlState, pos);
+    YAPI_LOAD_SYMBOL("yacGetLastError", yapiSymbols.fnGetLastError)
+    (*yapiSymbols.fnGetLastError)(errCode, message, sqlState, pos);
     return YAPI_SUCCESS;
 }
 

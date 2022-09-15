@@ -12,11 +12,12 @@ extern "C" {
 #define YAPI_FALSE false
 
 #define YAPI_PARAM_NAME_BUFFER_SIZE 32
-#define YAPI_MAX_ERROR_MSG_LEN 256
 #define YAPI_MIN_PACKET_SIZE KB(64)
 #define YAPI_MAX_PACKET_SIZE MB(32)
-#define YAPI_NULL_DATA 0xFFFFFFFF
-#define YAPI_NULL_TERM_STR 0xFFFFFFFE
+#define YAPI_NULL_DATA -1
+#define YAPI_NULL_TERM_STR -2
+#define YAPI_MAX_ERROR_MSG_LEN 4096
+#define YAPI_MAX_SQLSTAT_LEN 16
 
 typedef int64_t        YapiDate;
 typedef int64_t        YapiShortTime;
@@ -104,8 +105,8 @@ typedef struct StYapiTextPos {
 
 typedef struct StYapiErrorInfo {
     int32_t errCode;
-    char* message;
-    char* sqlState;
+    char message[YAPI_MAX_ERROR_MSG_LEN];
+    char sqlState[YAPI_MAX_SQLSTAT_LEN];
     YapiTextPos pos;
 } YapiErrorInfo;
 
