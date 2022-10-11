@@ -354,7 +354,7 @@ YapiResult yapiCliLobWrite(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* by
 YapiResult yapiCliLobCreateTemporary(YapiConnect* hConn, YapiLobLocator* loc)
 {
     YapiErrorMsg* error = NULL;
-    YAPI_LOAD_SYMBOL("yacLobCreateTemporaryt", yapiSymbols.fnLobCreateTemporary)
+    YAPI_LOAD_SYMBOL("yacLobCreateTemporary", yapiSymbols.fnLobCreateTemporary)
     return (*yapiSymbols.fnLobCreateTemporary)(hConn, loc);
 }
 YapiResult yapiCliLobFreeTemporary(YapiConnect* hConn, YapiLobLocator* loc)
