@@ -20,6 +20,7 @@ YapiResult yapiPrepare(YapiConnect* hConn, const char* sql, int32_t sqlLength, Y
 YapiResult yapiReleaseStmt(YapiStmt* hStmt)
 {
     yapiCliFreeHandle(YAPI_HANDLE_STMT, hStmt->stmtHandler);
+    free(hStmt);
     return YAPI_SUCCESS;
 }
 
