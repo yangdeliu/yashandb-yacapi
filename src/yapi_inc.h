@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-typedef enum EnYacResult { YA_SUCCESS = 0, YAC_SUCCESS_WITH_INFO = 1, YAC_ERROR = -1 } YacResult;
+typedef enum EnYacResult { YAC_SUCCESS = 0, YAC_SUCCESS_WITH_INFO = 1, YAC_ERROR = -1 } YacResult;
 typedef void* YacHandle;
 
 typedef YacResult (*yapiFuncAllocHandle)(YapiHandleType type, YacHandle input, YacHandle* output);
@@ -123,15 +123,22 @@ typedef struct StYapiSymbols {
 
 #define T2S_BUFFER_SIZE 4096
 
-typedef struct StYapiErrorMsg {
+typedef struct StYapiErrorBuffer {
     uint32_t code;
     uint32_t messageLen;
     char     message[T2S_BUFFER_SIZE];
+    char     sqlState[YAPI_MAX_SQLSTAT_LEN];
+    YapiTextPos pos;
+} YapiErrorBuffer;
+
+typedef struct StYapiErrorMsg {
+    YapiErrorBuffer* buf;
 } YapiErrorMsg;
 
 typedef enum {
     YAPI_ERR_NO_ERR = 20000,
     YAPI_ERR_LOAD_SYMBOL,
+    YAPI_ERR_ALLOC_MEM,
 } yapiErrorNum;
 
 typedef struct StYapiEnv {
@@ -195,6 +202,10 @@ YapiResult yapiCliLobRead(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* byt
 YapiResult yapiCliLobWrite(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen);
 YapiResult yapiCliLobCreateTemporary(YapiConnect* hConn, YapiLobLocator* loc);
 YapiResult yapiCliLobFreeTemporary(YapiConnect* hConn, YapiLobLocator* loc);
+
+void yapiInitError(YapiErrorMsg *error);
+void yapiGetErrorInfo(YapiErrorMsg* error, YapiErrorInfo *info);
+void yapiGetCliError(YapiErrorMsg* error);
 
 #ifdef __cplusplus
 }

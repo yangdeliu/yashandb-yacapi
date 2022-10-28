@@ -103,11 +103,12 @@ typedef struct StYapiTextPos {
     int32_t column;
 } YapiTextPos;
 
+// structure used for transferring error information from YAC API
 typedef struct StYapiErrorInfo {
-    int32_t     errCode;
-    char        message[YAPI_MAX_ERROR_MSG_LEN];
-    char        sqlState[YAPI_MAX_SQLSTAT_LEN];
-    YapiTextPos pos;
+    int32_t      errCode;
+    char*        message;
+    char*        sqlState;
+    YapiTextPos* pos;
 } YapiErrorInfo;
 
 typedef struct StYapiColumnDesc {

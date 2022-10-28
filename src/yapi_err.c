@@ -18,19 +18,55 @@
 #include <sys/syscall.h>
 #endif
 
+#ifdef _MSC_VER
+#define __thread __declspec(thread)  // Thread Local Storage
+#endif
+
+__thread YapiErrorBuffer gErrorBuf;
+
 void yapiSetError(YapiErrorMsg* error, yapiErrorNum errorNum, const char* format, ...)
 {
     if(error == NULL) {
         return;
     }
     va_list args;
-    error->code = errorNum;
+    error->buf->code = errorNum;
 
     va_start(args, format);
-    error->messageLen = (uint32_t)vsnprintf(error->message,
-                            sizeof(error->message),
+    error->buf->messageLen = (uint32_t)vsnprintf(error->buf->message,
+                            sizeof(error->buf->message),
                             format, args);
     va_end(args);
+}
+
+void yapiInitError(YapiErrorMsg *error)
+{
+    error->buf = &gErrorBuf;
+}
+
+void yapiGetCliError(YapiErrorMsg* error)
+{
+    printf("yapiGetCliError\n");
+    char *msg, *stat;
+    if (yapiCliGetLastError(&error->buf->code, &msg, &stat, &error->buf->pos) != YAPI_SUCCESS) {
+        printf("yapiGetCliError GetLastError Fail\n");
+        error->buf->code = -1;
+        error->buf->pos.column = -1;
+        error->buf->pos.line = -1;
+        msg = "get error failed";
+        stat = "00000";
+    }
+    printf("yapiGetCliError GetLastError %s\n", msg);
+    strcpy_s(error->buf->message, T2S_BUFFER_SIZE, msg);
+    strcpy_s(error->buf->sqlState, YAPI_MAX_SQLSTAT_LEN, stat);
+}
+
+void yapiGetErrorInfo(YapiErrorMsg *error, YapiErrorInfo *info)
+{
+    info->errCode = error->buf->code;
+    info->message = error->buf->message;
+    info->pos = &error->buf->pos;
+    info->sqlState = error->buf->sqlState;
 }
 
 #ifdef _WIN32
@@ -49,7 +85,7 @@ static YapiResult yapiGetWindowsError(DWORD errNum, YapiErrorMsg* error)
     if (len >= T2S_BUFFER_SIZE) {
         len = T2S_BUFFER_SIZE - 1;
     }
-    memcpy(error->message, errBuf, len);
+    memcpy(error->buf->message, errBuf, len);
     LocalFree(errBuf);
     return YAPI_ERROR;
 }

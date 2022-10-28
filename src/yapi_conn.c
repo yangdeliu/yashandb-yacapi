@@ -56,17 +56,10 @@ YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, i
 
 void yapiGetLastError(YapiErrorInfo* info)
 {
-    char *msg, *stat;
-    if (yapiCliGetLastError(&info->errCode, &msg, &stat, &info->pos) != YAPI_SUCCESS) {
-        info->errCode = -1;
-        info->pos.column = -1;
-        info->pos.line = -1;
-        strcpy(info->message, "get error failed");
-        strcpy(info->sqlState, "00000");
-    } else {
-        strcpy(info->message, msg);
-        strcpy(info->sqlState, stat);
-    }
+    YapiErrorMsg error;
+
+    yapiInitError(&error);
+    yapiGetErrorInfo(&error, info);
 }
 
 YapiResult yapiLobDescAlloc(YapiConnect* hConn, YapiType type, void** desc)
