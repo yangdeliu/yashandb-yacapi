@@ -46,19 +46,7 @@ void yapiInitError(YapiErrorMsg *error)
 
 void yapiGetCliError(YapiErrorMsg* error)
 {
-    printf("yapiGetCliError\n");
-    char *msg, *stat;
-    if (yapiCliGetLastError(&error->buf->code, &msg, &stat, &error->buf->pos) != YAPI_SUCCESS) {
-        printf("yapiGetCliError GetLastError Fail\n");
-        error->buf->code = -1;
-        error->buf->pos.column = -1;
-        error->buf->pos.line = -1;
-        msg = "get error failed";
-        stat = "00000";
-    }
-    printf("yapiGetCliError GetLastError %s\n", msg);
-    strcpy_s(error->buf->message, T2S_BUFFER_SIZE, msg);
-    strcpy_s(error->buf->sqlState, YAPI_MAX_SQLSTAT_LEN, stat);
+    yapiCliGetLastError(error);
 }
 
 void yapiGetErrorInfo(YapiErrorMsg *error, YapiErrorInfo *info)

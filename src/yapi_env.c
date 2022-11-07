@@ -23,7 +23,7 @@ YapiResult yapiAllocEnv(YapiEnv** inst)
         yapiSetError(&error, YAPI_ERR_ALLOC_MEM, "cannot allocate %" PRId64 " bytes for %s", sizeof(YapiEnv), "env");
         return YAPI_ERROR;
     }
-    if (yapiCliAllocHandle(YAPI_HANDLE_ENV, NULL, &env->envHandler) == YAPI_ERROR) {
+    if (yapiCliAllocHandle(YAPI_HANDLE_ENV, NULL, &env->envHandler, &error) == YAPI_ERROR) {
         return YAPI_ERROR;
     }
 
@@ -33,5 +33,8 @@ YapiResult yapiAllocEnv(YapiEnv** inst)
 
 YapiResult yapiReleaseEnv(YapiEnv* inst)
 {
-    return yapiCliFreeHandle(YAPI_HANDLE_ENV, inst->envHandler);
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    
+    return yapiCliFreeHandle(YAPI_HANDLE_ENV, inst->envHandler, &error);
 }

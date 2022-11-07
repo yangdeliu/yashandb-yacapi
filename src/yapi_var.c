@@ -2,5 +2,7 @@
 
 YapiResult yapiGetDateStruct(YapiDate date, YapiDateStruct* ds)
 {
-    return yapiCliGetDateStruct(date, ds);
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliGetDateStruct(date, ds, &error);
 }
