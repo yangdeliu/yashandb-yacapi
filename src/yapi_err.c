@@ -56,25 +56,3 @@ void yapiGetErrorInfo(YapiErrorMsg *error, YapiErrorInfo *info)
     info->pos = &error->buf->pos;
     info->sqlState = error->buf->sqlState;
 }
-
-#ifdef _WIN32
-static YapiResult yapiGetWindowsError(DWORD errNum, YapiErrorMsg* error)
-{
-    TCHAR *errBuf = NULL;
-    DWORD status = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-            NULL, errNum, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-            (LPTSTR) &errBuf, 0, NULL);
-    if (errBuf == NULL) {
-        return YAPI_SUCCESS;
-    }
-
-    size_t len = _tcslen(errBuf);
-    if (len >= T2S_BUFFER_SIZE) {
-        len = T2S_BUFFER_SIZE - 1;
-    }
-    memcpy(error->buf->message, errBuf, len);
-    LocalFree(errBuf);
-    return YAPI_ERROR;
-}
-#endif
