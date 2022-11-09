@@ -7,14 +7,14 @@ YapiResult yapiGetDateStruct(YapiDate date, YapiDateStruct* ds)
     return yapiCliGetDateStruct(date, ds, &error);
 }
 
-YacResult yapiDateGetDate(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day) 
+YapiResult yapiDateGetDate(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
     return yapiCliDateGetDate(date, year, month, day, &error);
 }
 
-YacResult yapiShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uint8_t* minute, uint8_t* second,
+YapiResult yapiShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uint8_t* minute, uint8_t* second,
                                        uint32_t* fraction)
 {
     YapiErrorMsg error;
@@ -22,7 +22,7 @@ YacResult yapiShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uin
     return yapiCliShortTimeGetShortTime(time, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiTimestampGetTimestamp(const YapiTimestamp timestamp, int16_t* year, uint8_t* month, uint8_t* day,
+YapiResult yapiTimestampGetTimestamp(const YapiTimestamp timestamp, int16_t* year, uint8_t* month, uint8_t* day,
                                        uint8_t* hour, uint8_t* minute, uint8_t* second, uint32_t* fraction)
 {
     YapiErrorMsg error;
@@ -30,14 +30,14 @@ YacResult yapiTimestampGetTimestamp(const YapiTimestamp timestamp, int16_t* year
     return yapiCliTimestampGetTimestamp(timestamp, year, month, day, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiYMIntervalGetYearMonth(const YapiYMInterval ymInterval, int32_t* year, int32_t* month) 
+YapiResult yapiYMIntervalGetYearMonth(const YapiYMInterval ymInterval, int32_t* year, int32_t* month)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
     return yapiCliYMIntervalGetYearMonth(ymInterval, year, month, &error);
 }
 
-YacResult yapiDSIntervalGetDaySecond(const YapiDSInterval dsInterval, int32_t* day, int32_t* hour, int32_t* minute,
+YapiResult yapiDSIntervalGetDaySecond(const YapiDSInterval dsInterval, int32_t* day, int32_t* hour, int32_t* minute,
                                         int32_t* second, int32_t* fraction)
 {
     YapiErrorMsg error;
@@ -45,14 +45,14 @@ YacResult yapiDSIntervalGetDaySecond(const YapiDSInterval dsInterval, int32_t* d
     return yapiCliDSIntervalGetDaySecond(dsInterval, day, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiDateSetDate(YapiDate* date, int16_t year, uint8_t month, uint8_t day) 
+YapiResult yapiDateSetDate(YapiDate* date, int16_t year, uint8_t month, uint8_t day)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
     return yapiCliDateSetDate(date, year, month, day, &error);
 }
 
-YacResult yapiShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t minute, uint8_t second,
+YapiResult yapiShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t minute, uint8_t second,
                                        uint32_t fraction)
 {
     YapiErrorMsg error;
@@ -60,7 +60,7 @@ YacResult yapiShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t m
     return yapiCliShortTimeSetShortTime(time, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day, uint8_t hour,
+YapiResult yapiTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day, uint8_t hour,
                                        uint8_t minute, uint8_t second, uint32_t fraction)
 {
     YapiErrorMsg error;
@@ -68,14 +68,14 @@ YacResult yapiTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint
     return yapiCliTimestampSetTimestamp(timestamp, year, month, day, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month) 
+YapiResult yapiYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
     return yapiCliYMIntervalSetYearMonth(ymInterval, year, month, &error);
 }
 
-YacResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
+YapiResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
                                         int32_t second, int32_t fraction)
 {
     YapiErrorMsg error;
@@ -83,7 +83,7 @@ YacResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, in
     return yapiCliDSIntervalSetDaySecond(dsInterval, day, hour, minute, second, fraction, &error);
 }
 
-YacResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale)
+YapiResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
