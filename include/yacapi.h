@@ -292,6 +292,31 @@ typedef enum EnYapiSQLType {
     __YAPI_SQLTYPE_COUNT__ = 255
 } YapiSQLType;
 
+#define yapiEnvCreate yapiAllocEnv
+#define yapiEnvRelease yapiReleaseEnv
+
+#define yapiConnCreate yapiConnect
+#define yapiConnDisconnect yapiDisconnect
+#define yapiConnRelease yapiReleaseConn
+#define yapiConnCancel yapiCancel
+#define yapiConnCommit yapiCommit
+#define yapiConnRollback yapiRollback
+#define yapiConnSetAttr yapiSetConnAttr
+#define yapiConnGetAttr yapiGetConnAttr
+#define yapiConnPrepareStmt yapiPrepare
+
+#define yapiStmtExecute yapiExecute
+#define yapiStmtFetch yapiFetch
+#define yapiStmtDirectExecute yapiDirectExecute
+#define yapiStmtDescribeCol2 yapiDescribeCol2
+#define yapiStmtBindColumn yapiBindColumn
+#define yapiStmtBindParameter yapiBindParameter
+#define yapiStmtBindParameterByName yapiBindParameterByName
+#define yapiStmtNumResultCols yapiNumResultCols
+#define yapiStmtSetAttr yapiSetStmtAttr
+#define yapiStmtGetAttr yapiGetStmtAttr
+#define yapiStmtRelease yapiReleaseStmt
+
 char* yapiGetVersion(YapiEnv* inst);
 void  yapiGetLastError(YapiErrorInfo* info);
 
@@ -300,6 +325,7 @@ void  yapiGetLastError(YapiErrorInfo* info);
 //-----------------------------------------------------------------------------
 YapiResult yapiAllocEnv(YapiEnv** inst);
 YapiResult yapiReleaseEnv(YapiEnv* inst);
+YapiResult yapiEnvGetAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength);
 
 //-----------------------------------------------------------------------------
 // Session Function
@@ -312,42 +338,38 @@ YapiResult yapiCancel(YapiConnect* hConn);
 YapiResult yapiCommit(YapiConnect* hConn);
 YapiResult yapiRollback(YapiConnect* hConn);
 YapiResult yapiSetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, int32_t length);
-YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, int32_t bufLength,
-                           int32_t* stringLength);
+YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, int32_t bufLength, int32_t* stringLength);
 
 //-----------------------------------------------------------------------------
 // Statment Function
 //-----------------------------------------------------------------------------
 YapiResult yapiPrepare(YapiConnect* hConn, const char* sql, int32_t sqlLength, YapiStmt** hStmt);
+YapiResult yapiStmtCreate(YapiConnect* hConn, YapiStmt** hStmt);
+YapiResult yapiStmtPrepare(YapiStmt* hStmt, const char* sql, int32_t sqlLength);
 YapiResult yapiExecute(YapiStmt* hStmt);
 YapiResult yapiFetch(YapiStmt* hStmt, uint32_t* rows);
 YapiResult yapiDirectExecute(YapiStmt* hStmt, const char* sql, int32_t sqlLength);
 YapiResult yapiDescribeCol2(YapiStmt* hStmt, uint16_t id, YapiColumnDesc* desc);
-YapiResult yapiBindColumn(YapiStmt* hStmt, uint16_t id, YapiType type, YapiPointer value, int32_t bufLen,
-                          int32_t* indicator);
-YapiResult yapiBindParameter(YapiStmt* hStmt, uint16_t id, YapiParamDirection direction, YapiType bindType,
-                             YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator);
-YapiResult yapiBindParameterByName(YapiStmt* hStmt, char* name, YapiParamDirection direction, YapiType bindType,
-                                   YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator);
+YapiResult yapiBindColumn(YapiStmt* hStmt, uint16_t id, YapiType type, YapiPointer value, int32_t bufLen, int32_t* indicator);
+YapiResult yapiBindParameter(YapiStmt* hStmt, uint16_t id, YapiParamDirection direction, YapiType bindType, YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator);
+YapiResult yapiBindParameterByName(YapiStmt* hStmt, char* name, YapiParamDirection direction, YapiType bindType, YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator);
 YapiResult yapiNumResultCols(YapiStmt* hStmt, int16_t* count);
 YapiResult yapiSetStmtAttr(YapiStmt* hStmt, YapiStmtAttr attr, void* value, int32_t length);
 YapiResult yapiGetStmtAttr(YapiStmt* hStmt, YapiStmtAttr attr, void* value, int32_t bufLength, int32_t* stringLength);
 YapiResult yapiReleaseStmt(YapiStmt* hStmt);
 
 //-----------------------------------------------------------------------------
-// Enviment Function
+// Data Function
 //-----------------------------------------------------------------------------
-YapiResult yapiGetEnvAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength);
-
-void       yacNumberFromInt32(YapiNumber* n, int32_t v);
-YapiResult yacText2Timestamp(char* text, char* format, YapiDate* stamp, int16_t* bias);
-YapiResult yacText2YMInterval(char* str, YapiYMInterval* interval);
-YapiResult yacText2DSInterval(char* str, YapiDSInterval* interval);
-YapiResult yacText2ShortTime(char* str, char* format, YapiShortTime* shortTime);
+//void       yacNumberFromInt32(YapiNumber* n, int32_t v);
+//YapiResult yacText2Timestamp(char* text, char* format, YapiDate* stamp, int16_t* bias);
+//YapiResult yacText2YMInterval(char* str, YapiYMInterval* interval);
+//YapiResult yacText2DSInterval(char* str, YapiDSInterval* interval);
+//YapiResult yacText2ShortTime(char* str, char* format, YapiShortTime* shortTime);
 YapiResult yapiGetDateStruct(YapiDate date, YapiDateStruct* ds);
 
 //-----------------------------------------------------------------------------
-// Enviment Function
+// Lob Function
 //-----------------------------------------------------------------------------
 YapiResult yapiLobDescAlloc(YapiConnect* hConn, YapiType type, void** desc);
 YapiResult yapiLobDescFree(void* desc, YapiType type);

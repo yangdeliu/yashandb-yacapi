@@ -13,7 +13,10 @@ YapiResult yapiAllocMem(const char* name, size_t numMembers, size_t memberSize, 
 }
 
 //-----------------------------------------------------------------------------
-void YapiFreeMem(void *ptr)
+void yapiFreeMem(void *ptr)
 {
+    if (ptr == NULL) {
+        return;
+    }
     free(ptr);
 }

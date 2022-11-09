@@ -9,14 +9,17 @@ YapiResult yapiConnect(YapiEnv* env, const char* url, int16_t urlLength, const c
     yapiInitError(&error);
 
     YapiConnect* conn;
-    if (yapiAllocMem("Connection", sizeof(YapiConnect), 1, (void **)&conn, &error)!= YAPI_SUCCESS) {
+    if (yapiAllocMem("Connection", 1, sizeof(YapiConnect), (void**)&conn, &error) != YAPI_SUCCESS) {
         return YAPI_ERROR;
     }
     if (yapiCliAllocHandle(YAPI_HANDLE_DBC, env->envHandler, &conn->connHandler, &error) != YAPI_SUCCESS) {
+        yapiFreeMem(conn);
         return YAPI_ERROR;
     }
     if (yapiCliConnect(conn->connHandler, url, urlLength, user, userLength, password, passwordLength, &error) !=
         YAPI_SUCCESS) {
+        yapiCliFreeHandle(YAPI_HANDLE_DBC, conn->connHandler, &error);
+        yapiFreeMem(conn);
         return YAPI_ERROR;
     }
     *hConn = conn;

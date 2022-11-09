@@ -173,8 +173,11 @@ YapiResult yapiCliGetLastError(YapiErrorMsg* error)
 YapiResult yapiCliGetEnvAttr(YacHandle hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength,
                              YapiErrorMsg* error)
 {
+    YapiResult ret;
+
     YAPI_LOAD_SYMBOL("yacGetEnvAttr", yapiSymbols.fnGetEnvAttr)
-    return (*yapiSymbols.fnGetEnvAttr)(hEnv, attr, value, bufLength, stringLength);
+    ret = (*yapiSymbols.fnGetEnvAttr)(hEnv, attr, value, bufLength, stringLength);
+    YAPI_CHECK_CLI_RETURN();
 }
 
 YapiResult yapiCliConnect(YacHandle hConn, const char* url, int16_t urlLength, const char* user, int16_t userLength,
@@ -314,7 +317,7 @@ YapiResult yapiCliBindColumn(YacHandle hStmt, uint16_t id, YapiType type, YapiPo
 }
 
 YapiResult yapiCliBindParameter(YacHandle hStmt, uint16_t id, YapiParamDirection direction, YapiType bindType,
-                                YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error)
+                                YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error)
 {
     YapiResult    ret;
 
@@ -324,7 +327,7 @@ YapiResult yapiCliBindParameter(YacHandle hStmt, uint16_t id, YapiParamDirection
 }
 
 YapiResult yapiCliBindParameterByName(YacHandle hStmt, char* name, YapiParamDirection direction, YapiType bindType,
-                                      YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error)
+                                      YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error)
 {
     YapiResult    ret;
 
@@ -351,7 +354,7 @@ YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg*
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobDescAlloc(YapiConnect* hConn, YapiType type, void** desc, YapiErrorMsg* error)
+YapiResult yapiCliLobDescAlloc(YacHandle* hConn, YapiType type, void** desc, YapiErrorMsg* error)
 {
     YapiResult    ret;
 
@@ -369,7 +372,7 @@ YapiResult yapiCliLobDescFree(void* desc, YapiType type, YapiErrorMsg* error)
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobGetChunkSize(YapiConnect* hConn, YapiLobLocator* locator, uint16_t* chunkSize, YapiErrorMsg* error)
+YapiResult yapiCliLobGetChunkSize(YacHandle* hConn, YapiLobLocator* locator, uint16_t* chunkSize, YapiErrorMsg* error)
 {
     YapiResult    ret;
 
@@ -378,7 +381,7 @@ YapiResult yapiCliLobGetChunkSize(YapiConnect* hConn, YapiLobLocator* locator, u
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobGetLength(YapiConnect* hConn, YapiLobLocator* locator, uint64_t* length, YapiErrorMsg* error)
+YapiResult yapiCliLobGetLength(YacHandle* hConn, YapiLobLocator* locator, uint64_t* length, YapiErrorMsg* error)
 {
     YapiResult ret;
 
@@ -387,7 +390,7 @@ YapiResult yapiCliLobGetLength(YapiConnect* hConn, YapiLobLocator* locator, uint
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobRead(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen,
+YapiResult yapiCliLobRead(YacHandle* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen,
                           YapiErrorMsg* error)
 {
     YapiResult ret;
@@ -397,7 +400,7 @@ YapiResult yapiCliLobRead(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* byt
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobWrite(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen,
+YapiResult yapiCliLobWrite(YacHandle* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen,
                            YapiErrorMsg* error)
 {
     YapiResult ret;
@@ -407,7 +410,7 @@ YapiResult yapiCliLobWrite(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* by
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobCreateTemporary(YapiConnect* hConn, YapiLobLocator* loc, YapiErrorMsg* error)
+YapiResult yapiCliLobCreateTemporary(YacHandle* hConn, YapiLobLocator* loc, YapiErrorMsg* error)
 {
     YapiResult ret;
 
@@ -416,7 +419,7 @@ YapiResult yapiCliLobCreateTemporary(YapiConnect* hConn, YapiLobLocator* loc, Ya
     YAPI_CHECK_CLI_RETURN();
 }
 
-YapiResult yapiCliLobFreeTemporary(YapiConnect* hConn, YapiLobLocator* loc, YapiErrorMsg* error)
+YapiResult yapiCliLobFreeTemporary(YacHandle* hConn, YapiLobLocator* loc, YapiErrorMsg* error)
 {
     YapiResult ret;
 
