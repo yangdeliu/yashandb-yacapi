@@ -7,6 +7,14 @@
 extern "C" {
 #endif
 
+#define YAPI_CALL(yapiFunc)  \
+do {                         \
+    YapiResult r = yapiFunc; \
+    if (r == YAPI_ERROR) {   \
+        return r;            \
+    }                        \
+} while (0)
+
 typedef enum EnYacResult { YAC_SUCCESS = 0, YAC_SUCCESS_WITH_INFO = 1, YAC_ERROR = -1 } YacResult;
 typedef void* YacHandle;
 
@@ -39,12 +47,15 @@ typedef YacResult (*yapiFuncDescribeCol2)(YacHandle hStmt, uint16_t id, YapiColu
 typedef YacResult (*yapiFuncBindColumn)(YacHandle hStmt, uint16_t id, YapiType type, void* value, int32_t bufLen,
                                         int32_t* indicator);
 typedef YacResult (*yapiFuncBindParameter)(YacHandle hStmt, uint16_t id, YapiParamDirection direction,
-                                           YapiType bindType, void* value, uint32_t bindSize, int32_t bufLength,
+                                           YapiType bindType, void* value, int32_t bindSize, int32_t bufLength,
                                            int32_t* indicator);
 typedef YacResult (*yapiFuncBindParameterByName)(YacHandle hStmt, char* name, YapiParamDirection direction,
-                                                 YapiType bindType, void* value, uint32_t bindSize, int32_t bufLength,
+                                                 YapiType bindType, void* value, int32_t bindSize, int32_t bufLength,
                                                  int32_t* indicator);
 typedef YacResult (*yapiFuncNumResultCols)(YacHandle hStmt, int16_t* count);
+typedef YacResult (*yapiFuncColAttribute)(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
+                                         int32_t* stringLength);
+typedef YacResult (*yapiFuncNumParams)(YacHandle hStmt, int16_t* count);
 
 typedef YapiDate (*yapiFuncNow)();
 typedef void (*yapiFuncNumberFromInt32)(YapiNumber* n, int32_t v);
@@ -69,6 +80,29 @@ typedef YacResult (*yapiFuncLobWrite)(YacHandle hConn, YapiLobLocator* loc, uint
                                       uint64_t bufLen);
 typedef YacResult (*yapiFuncLobCreateTemporary)(YacHandle hConn, YapiLobLocator* loc);
 typedef YacResult (*yapiFuncLobFreeTemporary)(YacHandle hConn, YapiLobLocator* loc);
+
+// dataType API
+typedef YacResult (*yapiFuncDateGetDate)(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day);
+typedef YacResult (*yapiFuncShortTimeGetShortTime)(const YapiShortTime time, uint8_t* hour, uint8_t* minute,
+                                                  uint8_t* second, uint32_t* fraction);
+typedef YacResult (*yapiFuncTimestampGetTimestamp)(const YapiTimestamp timestamp, int16_t* year, uint8_t* month,
+                                                  uint8_t* day, uint8_t* hour, uint8_t* minute, uint8_t* second,
+                                                  uint32_t* fraction);
+typedef YacResult (*yapiFuncYMIntervalGetYearMonth)(const YapiYMInterval ymInterval, int32_t* year, int32_t* month);
+typedef YacResult (*yapiFuncDSIntervalGetDaySecond)(const YapiDSInterval dsInterval, int32_t* day, int32_t* hour,
+                                                   int32_t* minute, int32_t* second, int32_t* fraction);
+
+typedef YacResult (*yapiFuncDateSetDate)(YapiDate* date, int16_t year, uint8_t month, uint8_t day);
+typedef YacResult (*yapiFuncShortTimeSetShortTime)(YapiShortTime* time, uint8_t hour, uint8_t minute, uint8_t second,
+                                                  uint32_t fraction);
+typedef YacResult (*yapiFuncTimestampSetTimestamp)(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day,
+                                                  uint8_t hour, uint8_t minute, uint8_t second, uint32_t fraction);
+typedef YacResult (*yapiFuncYMIntervalSetYearMonth)(YapiYMInterval* ymInterval, int32_t year, int32_t month);
+typedef YacResult (*yapiFuncDSIntervalSetDaySecond)(YapiDSInterval* dsInterval, int32_t day, int32_t hour,
+                                                   int32_t minute, int32_t second, int32_t fraction);
+
+typedef YacResult (*yapiFuncNumberRound)(YapiNumber* n, int32_t precision, int32_t scale);
+
 
 typedef struct StYapiSymbols {
     yapiFuncAllocHandle fnAllocHandle;
@@ -99,6 +133,8 @@ typedef struct StYapiSymbols {
     yapiFuncBindParameter       fnBindParameter;
     yapiFuncBindParameterByName fnBindParameterByName;
     yapiFuncNumResultCols       fnNumResultCols;
+    yapiFuncColAttribute        fnColAttribute;
+    yapiFuncNumParams           fnNumParams;
 
     yapiFuncNow             fnNow;
     yapiFuncNumberFromInt32 fnNumberFromInt32;
@@ -119,6 +155,20 @@ typedef struct StYapiSymbols {
     yapiFuncLobWrite           fnLobWrite;
     yapiFuncLobCreateTemporary fnLobCreateTemporary;
     yapiFuncLobFreeTemporary   fnLobFreeTemporary;
+
+    yapiFuncDateGetDate            fnDateGetDate;
+    yapiFuncShortTimeGetShortTime  fnShortTimeGetShortTime;
+    yapiFuncTimestampGetTimestamp  fnTimestampGetTimestamp;
+    yapiFuncYMIntervalGetYearMonth fnYMIntervalGetYearMonth;
+    yapiFuncDSIntervalGetDaySecond fnDSIntervalGetDaySecond;
+
+    yapiFuncDateSetDate            fnDateSetDate;
+    yapiFuncShortTimeSetShortTime  fnShortTimeSetShortTime;
+    yapiFuncTimestampSetTimestamp  fnTimestampSetTimestamp;
+    yapiFuncYMIntervalSetYearMonth fnYMIntervalSetYearMonth;
+    yapiFuncDSIntervalSetDaySecond fnDSIntervalSetDaySecond;
+
+    yapiFuncNumberRound            fnNumberRound;
 } YapiSymbols;
 
 #define T2S_BUFFER_SIZE 4096
@@ -143,17 +193,17 @@ typedef enum {
 
 typedef struct StYapiEnv {
     uint32_t version;
-    void*    envHandler;
+    YacHandle envHandler;
 } YapiEnv;
 
 typedef struct StYapiConnect {
     YapiEnv* env;
-    void*    connHandler;
+    YacHandle connHandler;
 } YapiConnect;
 
 typedef struct StYapiStmt {
     YapiConnect* conn;
-    void*        stmtHandler;
+    YacHandle    stmtHandler;
 } YapiStmt;
 
 YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg* error);
@@ -187,27 +237,53 @@ YapiResult yapiCliDescribeCol2(YacHandle hStmt, uint16_t id, YapiColumnDesc* des
 YapiResult yapiCliBindColumn(YacHandle hStmt, uint16_t id, YapiType type, YapiPointer value, int32_t bufLen,
                              int32_t* indicator, YapiErrorMsg* error);
 YapiResult yapiCliBindParameter(YacHandle hStmt, uint16_t id, YapiParamDirection direction, YapiType bindType,
-                                YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error);
+                                YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error);
 YapiResult yapiCliBindParameterByName(YacHandle hStmt, char* name, YapiParamDirection direction, YapiType bindType,
-                                      YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error);
+                                      YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator, YapiErrorMsg* error);
 YapiResult yapiCliNumResultCols(YacHandle hStmt, int16_t* count, YapiErrorMsg* error);
+YapiResult yapiCliColAttribute(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
+                               int32_t* stringLength, YapiErrorMsg* error);
+YapiResult yapiCliNumParams(YacHandle hStmt, int16_t* count, YapiErrorMsg* error);
 
 YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg* error);
 
-YapiResult yapiCliLobDescAlloc(YapiConnect* hConn, YapiType type, void** desc, YapiErrorMsg* error);
+YapiResult yapiCliLobDescAlloc(YacHandle* hConn, YapiType type, void** desc, YapiErrorMsg* error);
 YapiResult yapiCliLobDescFree(void* desc, YapiType type, YapiErrorMsg* error);
-YapiResult yapiCliLobGetChunkSize(YapiConnect* hConn, YapiLobLocator* locator, uint16_t* chunkSize, YapiErrorMsg* error);
-YapiResult yapiCliLobGetLength(YapiConnect* hConn, YapiLobLocator* locator, uint64_t* length, YapiErrorMsg* error);
-YapiResult yapiCliLobRead(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen, YapiErrorMsg* error);
-YapiResult yapiCliLobWrite(YapiConnect* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen, YapiErrorMsg* error);
-YapiResult yapiCliLobCreateTemporary(YapiConnect* hConn, YapiLobLocator* loc, YapiErrorMsg* error);
-YapiResult yapiCliLobFreeTemporary(YapiConnect* hConn, YapiLobLocator* loc, YapiErrorMsg* error);
+YapiResult yapiCliLobGetChunkSize(YacHandle* hConn, YapiLobLocator* locator, uint16_t* chunkSize, YapiErrorMsg* error);
+YapiResult yapiCliLobGetLength(YacHandle* hConn, YapiLobLocator* locator, uint64_t* length, YapiErrorMsg* error);
+YapiResult yapiCliLobRead(YacHandle* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen, YapiErrorMsg* error);
+YapiResult yapiCliLobWrite(YacHandle* hConn, YapiLobLocator* loc, uint64_t* bytes, uint8_t* buf, uint64_t bufLen, YapiErrorMsg* error);
+YapiResult yapiCliLobCreateTemporary(YacHandle* hConn, YapiLobLocator* loc, YapiErrorMsg* error);
+YapiResult yapiCliLobFreeTemporary(YacHandle* hConn, YapiLobLocator* loc, YapiErrorMsg* error);
+
+YapiResult yapiCliDateGetDate(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day, YapiErrorMsg* error);
+YapiResult yapiCliShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uint8_t* minute, uint8_t* second,
+                                        uint32_t* fraction, YapiErrorMsg* error);
+YapiResult yapiCliTimestampGetTimestamp(const YapiTimestamp timestamp, int16_t* year, uint8_t* month, uint8_t* day,
+                                        uint8_t* hour, uint8_t* minute, uint8_t* second, uint32_t* fraction,
+                                        YapiErrorMsg* error);
+YapiResult yapiCliYMIntervalGetYearMonth(const YapiYMInterval ymInterval, int32_t* year, int32_t* month,
+                                         YapiErrorMsg* error);
+YapiResult yapiCliDSIntervalGetDaySecond(const YapiDSInterval dsInterval, int32_t* day, int32_t* hour, int32_t* minute,
+                                         int32_t* second, int32_t* fraction, YapiErrorMsg* error);
+
+YapiResult yapiCliDateSetDate(YapiDate* date, int16_t year, uint8_t month, uint8_t day, YapiErrorMsg* error);
+YapiResult yapiCliShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t minute, uint8_t second,
+                                        uint32_t fraction, YapiErrorMsg* error);
+YapiResult yapiCliTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t fraction,
+                                        YapiErrorMsg* error);
+YapiResult yapiCliYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month, YapiErrorMsg* error);
+YapiResult yapiCliDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
+                                         int32_t second, int32_t fraction, YapiErrorMsg* error);
+
+YapiResult yapiCliNumberRound(YapiNumber* n, int32_t precision, int32_t scale, YapiErrorMsg* error);
 
 void yapiInitError(YapiErrorMsg *error);
 void yapiGetErrorInfo(YapiErrorMsg* error, YapiErrorInfo *info);
 void yapiGetCliError(YapiErrorMsg* error);
 
 YapiResult yapiAllocMem(const char* name, size_t numMembers, size_t memberSize, void **ptr, YapiErrorMsg *error);
+void       yapiFreeMem(void* ptr);
 
 #ifdef __cplusplus
 }

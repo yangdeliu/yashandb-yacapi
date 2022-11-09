@@ -18,12 +18,12 @@ YapiResult yapiAllocEnv(YapiEnv** inst)
         return YAPI_ERROR;
     }
 
-    YapiEnv* env = malloc(sizeof(YapiEnv));
-    if (env == NULL) {
-        yapiSetError(&error, YAPI_ERR_ALLOC_MEM, "cannot allocate %" PRId64 " bytes for %s", sizeof(YapiEnv), "env");
+    YapiEnv* env;
+    if (yapiAllocMem("Environment", 1, sizeof(YapiEnv), (void**)&env, &error) != YAPI_SUCCESS) {
         return YAPI_ERROR;
     }
     if (yapiCliAllocHandle(YAPI_HANDLE_ENV, NULL, &env->envHandler, &error) == YAPI_ERROR) {
+        yapiFreeMem(env);
         return YAPI_ERROR;
     }
 
@@ -36,5 +36,26 @@ YapiResult yapiReleaseEnv(YapiEnv* inst)
     YapiErrorMsg error;
     yapiInitError(&error);
     
-    return yapiCliFreeHandle(YAPI_HANDLE_ENV, inst->envHandler, &error);
+    YAPI_CALL(yapiCliFreeHandle(YAPI_HANDLE_ENV, inst->envHandler, &error));
+    yapiFreeMem(inst);
+
+    return YAPI_SUCCESS;
+}
+
+YapiResult yapiEnvGetAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliGetEnvAttr(hEnv->envHandler, attr, value, bufLength, stringLength, &error);
+}
+
+char* yapiGetVersion(YapiEnv* inst) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    char* version = NULL;
+    yapiCliGetVersion(&version, &error);
+    return version;
 }

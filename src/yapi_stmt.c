@@ -1,19 +1,48 @@
 #include "yapi_inc.h"
 #include "stdlib.h"
 
+YapiResult yapiStmtCreate(YapiConnect* hConn, YapiStmt** hStmt) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    YapiStmt* stmt;
+    if (yapiAllocMem("Statment", 1, sizeof(YapiStmt), (void**)&stmt, &error) != YAPI_SUCCESS) {
+        return YAPI_ERROR;
+    }
+    if (yapiCliAllocHandle(YAPI_HANDLE_STMT, hConn->connHandler, &stmt->stmtHandler, &error) != YAPI_SUCCESS) {
+        yapiFreeMem(stmt);
+        return YAPI_ERROR;
+    }
+
+    *hStmt = stmt;
+    return YAPI_SUCCESS;
+}
+
+YapiResult yapiStmtPrepare(YapiStmt* hStmt, const char* sql, int32_t sqlLength) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliPrepare(hStmt->stmtHandler, sql, sqlLength, &error);
+}
+
 YapiResult yapiPrepare(YapiConnect* hConn, const char* sql, int32_t sqlLength, YapiStmt** hStmt)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
 
     YapiStmt* stmt;
-    if (yapiAllocMem("Statment", sizeof(YapiStmt), 1, (void **)&stmt, &error) != YAPI_SUCCESS) {
+    if (yapiAllocMem("Statment", 1, sizeof(YapiStmt), (void**)&stmt, &error) != YAPI_SUCCESS) {
         return YAPI_ERROR;
     }
     if (yapiCliAllocHandle(YAPI_HANDLE_STMT, hConn->connHandler, &stmt->stmtHandler, &error) != YAPI_SUCCESS) {
+        yapiFreeMem(stmt);
         return YAPI_ERROR;
     }
     if (yapiCliPrepare(stmt->stmtHandler, sql, sqlLength, &error) != YAPI_SUCCESS) {
+        yapiCliFreeHandle(YAPI_HANDLE_STMT, stmt->stmtHandler, &error);
+        yapiFreeMem(stmt);
         return YAPI_ERROR;
     }
     *hStmt = stmt;
@@ -68,7 +97,7 @@ YapiResult yapiBindColumn(YapiStmt* hStmt, uint16_t id, YapiType type, YapiPoint
 }
 
 YapiResult yapiBindParameter(YapiStmt* hStmt, uint16_t id, YapiParamDirection direction, YapiType bindType,
-                           YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator)
+                           YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
@@ -78,7 +107,7 @@ YapiResult yapiBindParameter(YapiStmt* hStmt, uint16_t id, YapiParamDirection di
 }
 
 YapiResult yapiBindParameterByName(YapiStmt* hStmt, char* name, YapiParamDirection direction, YapiType bindType,
-                                   YapiPointer value, uint32_t bindSize, int32_t bufLength, int32_t* indicator)
+                                   YapiPointer value, int32_t bindSize, int32_t bufLength, int32_t* indicator)
 {
     YapiErrorMsg error;
     yapiInitError(&error);
@@ -108,4 +137,21 @@ YapiResult yapiGetStmtAttr(YapiStmt* hStmt, YapiStmtAttr attr, void* value, int3
     yapiInitError(&error);
 
     return yapiCliGetStmtAttr(hStmt->stmtHandler, attr, value, bufLength, stringLength, &error);
+}
+
+YapiResult yapiColAttribute(YapiStmt* hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
+                               int32_t* stringLength)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliColAttribute(hStmt->stmtHandler, id, attr, value, bufLen, stringLength, &error);
+}
+
+YapiResult yapiNumParams(YapiStmt* hStmt, int16_t* count) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliNumParams(hStmt->stmtHandler, count, &error);
 }
