@@ -138,3 +138,20 @@ YapiResult yapiGetStmtAttr(YapiStmt* hStmt, YapiStmtAttr attr, void* value, int3
 
     return yapiCliGetStmtAttr(hStmt->stmtHandler, attr, value, bufLength, stringLength, &error);
 }
+
+YapiResult yapiColAttribute(YapiStmt* hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
+                               int32_t* stringLength)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliColAttribute(hStmt->stmtHandler, id, attr, value, bufLen, stringLength, &error);
+}
+
+YapiResult yapiNumParams(YapiStmt* hStmt, int16_t* count) 
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliNumParams(hStmt->stmtHandler, count, &error);
+}

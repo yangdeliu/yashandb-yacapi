@@ -345,6 +345,25 @@ YapiResult yapiCliNumResultCols(YacHandle hStmt, int16_t* count, YapiErrorMsg* e
     YAPI_CHECK_CLI_RETURN();
 }
 
+YapiResult yapiCliColAttribute(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
+                              int32_t* stringLength, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacColAttribute", yapiSymbols.fnColAttribute)
+    ret = (*yapiSymbols.fnColAttribute)(hStmt, id, attr, value, bufLen, stringLength);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliNumParams(YacHandle hStmt, int16_t* count, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacNumParams", yapiSymbols.fnNumParams)
+    ret = (*yapiSymbols.fnNumParams)(hStmt, count);
+    YAPI_CHECK_CLI_RETURN();
+}
+
 YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg* error)
 {
     YapiResult    ret;
@@ -425,5 +444,113 @@ YapiResult yapiCliLobFreeTemporary(YacHandle* hConn, YapiLobLocator* loc, YapiEr
 
     YAPI_LOAD_SYMBOL("yacLobFreeTemporary", yapiSymbols.fnLobFreeTemporary)
     ret = (*yapiSymbols.fnLobFreeTemporary)(hConn, loc);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliDateGetDate(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDateGetDate", yapiSymbols.fnDateGetDate)
+    ret = (*yapiSymbols.fnDateGetDate)(date, year, month, day);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uint8_t* minute, uint8_t* second,
+                                       uint32_t* fraction, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacShortTimeGetShortTime", yapiSymbols.fnShortTimeGetShortTime)
+    ret = (*yapiSymbols.fnShortTimeGetShortTime)(time, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliTimestampGetTimestamp(const YapiTimestamp timestamp, int16_t* year, uint8_t* month, uint8_t* day,
+                                       uint8_t* hour, uint8_t* minute, uint8_t* second, uint32_t* fraction,
+                                       YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacTimestampGetTimestamp", yapiSymbols.fnTimestampGetTimestamp)
+    ret = (*yapiSymbols.fnTimestampGetTimestamp)(timestamp, year, month, day, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliYMIntervalGetYearMonth(const YapiYMInterval ymInterval, int32_t* year, int32_t* month,
+                                        YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacYMIntervalGetYearMonth", yapiSymbols.fnYMIntervalGetYearMonth)
+    ret = (*yapiSymbols.fnYMIntervalGetYearMonth)(ymInterval, year, month);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliDSIntervalGetDaySecond(const YapiDSInterval dsInterval, int32_t* day, int32_t* hour, int32_t* minute,
+                                        int32_t* second, int32_t* fraction, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDSIntervalGetDaySecond", yapiSymbols.fnDSIntervalGetDaySecond)
+    ret = (*yapiSymbols.fnDSIntervalGetDaySecond)(dsInterval, day, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliDateSetDate(YapiDate* date, int16_t year, uint8_t month, uint8_t day, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDateSetDate", yapiSymbols.fnDateSetDate)
+    ret = (*yapiSymbols.fnDateSetDate)(date, year, month, day);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t minute, uint8_t second,
+                                       uint32_t fraction, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacShortTimeSetShortTime", yapiSymbols.fnShortTimeSetShortTime)
+    ret = (*yapiSymbols.fnShortTimeSetShortTime)(time, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day,
+                                        uint8_t hour,
+                                       uint8_t minute, uint8_t second, uint32_t fraction, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacTimestampSetTimestamp", yapiSymbols.fnTimestampSetTimestamp)
+    ret = (*yapiSymbols.fnTimestampSetTimestamp)(timestamp, year, month, day, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacYMIntervalSetYearMonth", yapiSymbols.fnYMIntervalSetYearMonth)
+    ret = (*yapiSymbols.fnYMIntervalSetYearMonth)(ymInterval, year, month);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
+                                        int32_t second, int32_t fraction, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDSIntervalSetDaySecond", yapiSymbols.fnDSIntervalSetDaySecond)
+    ret = (*yapiSymbols.fnDSIntervalSetDaySecond)(dsInterval, day, hour, minute, second, fraction);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliNumberRound(YapiNumber* n, int32_t precision, int32_t scale, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacNumberRound", yapiSymbols.fnNumberRound)
+    ret = (*yapiSymbols.fnNumberRound)(n, precision, scale);
     YAPI_CHECK_CLI_RETURN();
 }
