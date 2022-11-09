@@ -393,6 +393,8 @@ YapiResult yapiYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, 
 YapiResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
                                       int32_t second, int32_t fraction);
 
+YapiResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale);
+
 //-----------------------------------------------------------------------------
 // Lob Function
 //-----------------------------------------------------------------------------
