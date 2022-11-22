@@ -141,10 +141,19 @@ typedef enum EnYapiHandleType {
     __YAPI_HANDLE_COUNT__
 } YapiHandleType;
 
+typedef enum EnYapiCharsetCode {
+    YAPI_CHARSET_ASCII = 0,
+    YAPI_CHARSET_GBK,
+    YAPI_CHARSET_UTF8,
+    YAPI_CHARSET_ISO88591,
+    __YAPI_CHARSET_END__
+} YapiCharsetCode;
+
 typedef enum EnYapiEnvAttr {
     __YAPI_ENV_ATTR_BEGIN__ = 60,
     YAPI_ATTR_DATE_FORMAT = 60,
     YAPI_ATTR_CHARSET = 61,
+    YAPI_ATTR_CHARSET_CODE = 62,
     __YAPI_ENV_ATTR_END__
 } YapiEnvAttr;
 
@@ -331,6 +340,7 @@ void  yapiGetLastError(YapiErrorInfo* info);
 //-----------------------------------------------------------------------------
 YapiResult yapiAllocEnv(YapiEnv** inst);
 YapiResult yapiReleaseEnv(YapiEnv* inst);
+YapiResult yapiSetEnvAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t length);
 YapiResult yapiEnvGetAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength);
 
 //-----------------------------------------------------------------------------

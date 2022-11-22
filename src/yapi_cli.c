@@ -170,6 +170,16 @@ YapiResult yapiCliGetLastError(YapiErrorMsg* error)
     return YAPI_SUCCESS;
 }
 
+YapiResult yapiCliSetEnvAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t length,
+                             YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacSetEnvAttr", yapiSymbols.fnSetEnvAttr)
+    ret = (*yapiSymbols.fnSetEnvAttr)(hEnv, attr, value, length);
+    YAPI_CHECK_CLI_RETURN();
+}
+
 YapiResult yapiCliGetEnvAttr(YacHandle hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength,
                              YapiErrorMsg* error)
 {
