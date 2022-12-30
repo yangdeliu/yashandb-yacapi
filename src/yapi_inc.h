@@ -216,6 +216,7 @@ YapiResult yapiCliFreeHandle(YapiHandleType type, YacHandle handle, YapiErrorMsg
 YapiResult yapiCliGetVersion(char** version, YapiErrorMsg* error);
 YapiResult yapiCliGetLastError(YapiErrorMsg* error);
 
+YapiResult yapiCliSetEnvAttr(YapiEnv* hEnv, YapiEnvAttr attr, void* value, int32_t length, YapiErrorMsg* error);
 YapiResult yapiCliGetEnvAttr(YacHandle hEnv, YapiEnvAttr attr, void* value, int32_t bufLength, int32_t* stringLength, YapiErrorMsg* error);
 
 YapiResult yapiCliConnect(YacHandle hConn, const char* url, int16_t urlLength, const char* user, int16_t userLength,
