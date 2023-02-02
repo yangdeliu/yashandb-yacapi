@@ -379,11 +379,6 @@ YapiResult yapiReleaseStmt(YapiStmt* hStmt);
 //-----------------------------------------------------------------------------
 // Data Function
 //-----------------------------------------------------------------------------
-//void       yacNumberFromInt32(YapiNumber* n, int32_t v);
-//YapiResult yacText2Timestamp(char* text, char* format, YapiDate* stamp, int16_t* bias);
-//YapiResult yacText2YMInterval(char* str, YapiYMInterval* interval);
-//YapiResult yacText2DSInterval(char* str, YapiDSInterval* interval);
-//YapiResult yacText2ShortTime(char* str, char* format, YapiShortTime* shortTime);
 YapiResult yapiGetDateStruct(YapiDate date, YapiDateStruct* ds);
 YapiResult yapiDateGetDate(const YapiDate date, int16_t* year, uint8_t* month, uint8_t* day);
 YapiResult yapiShortTimeGetShortTime(const YapiShortTime time, uint8_t* hour, uint8_t* minute, uint8_t* second,
