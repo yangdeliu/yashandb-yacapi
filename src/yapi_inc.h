@@ -173,7 +173,7 @@ typedef struct StYapiSymbols {
     yapiFuncNumberRound            fnNumberRound;
 } YapiSymbols;
 
-#define T2S_BUFFER_SIZE 4096
+#define T2S_BUFFER_SIZE 8192
 
 typedef struct StYapiErrorBuffer {
     int32_t  code;
