@@ -50,7 +50,12 @@ YapiResult yapiConnect(YapiEnv* env, const char* url, int16_t urlLength, const c
         return YAPI_ERROR;
     }
 
-    return yapiConnect2(*hConn, url, urlLength, user, userLength, password, passwordLength);
+    if(yapiConnect2(*hConn, url, urlLength, user, userLength, password, passwordLength) != YAPI_SUCCESS) {
+        // when hConn was be free but hConn is not NULL, yaspy should try to double free this pointer
+        *hConn = NULL;
+        return YAPI_ERROR;
+    }
+    return YAPI_SUCCESS;
 }
 
 YapiResult yapiDisconnect(YapiConnect* hConn)
