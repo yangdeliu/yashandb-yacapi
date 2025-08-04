@@ -89,3 +89,11 @@ YapiResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale)
     yapiInitError(&error);
     return yapiCliNumberRound(n, precision, scale, &error);
 }
+
+YapiResult yapiNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
+                              const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliNumberFromText(str, strLength, fmt, fmtLength, nlsParam, nlsParamLength, number, &error);
+}

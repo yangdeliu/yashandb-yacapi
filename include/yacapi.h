@@ -453,6 +453,8 @@ YapiResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, i
                                       int32_t second, int32_t fraction);
 
 YapiResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale);
+YapiResult yapiNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
+                              const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number);
 
 //-----------------------------------------------------------------------------
 // Lob Function

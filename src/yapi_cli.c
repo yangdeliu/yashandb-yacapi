@@ -576,6 +576,16 @@ YapiResult yapiCliNumberRound(YapiNumber* n, int32_t precision, int32_t scale, Y
     YAPI_CHECK_CLI_RETURN();
 }
 
+YapiResult yapiCliNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
+                                 const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacNumberFromText", yapiSymbols.fnNumberFromText)
+    ret = (YapiResult)(*yapiSymbols.fnNumberFromText)(str, strLength, fmt, fmtLength, nlsParam, nlsParamLength, number);
+    YAPI_CHECK_CLI_RETURN();
+}
+
 YapiResult yapiCiPdbgStart(YacHandle hStmt, uint64_t objId, uint16_t subId, YapiErrorMsg* error)
 {
     YapiResult ret;

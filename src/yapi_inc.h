@@ -103,6 +103,7 @@ typedef YacResult (*yapiFuncDSIntervalSetDaySecond)(YapiDSInterval* dsInterval, 
                                                     int32_t minute, int32_t second, int32_t fraction);
 
 typedef YacResult (*yapiFuncNumberRound)(YapiNumber* n, int32_t precision, int32_t scale);
+typedef YacResult (*yapiFuncNumberFromText)(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength, const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number);
 
 typedef YacResult (*yapiFuncPdbgStart)(YacHandle stmt, uint64_t objId, uint16_t subId);
 
@@ -206,7 +207,8 @@ typedef struct StYapiSymbols {
     yapiFuncYMIntervalSetYearMonth fnYMIntervalSetYearMonth;
     yapiFuncDSIntervalSetDaySecond fnDSIntervalSetDaySecond;
 
-    yapiFuncNumberRound fnNumberRound;
+    yapiFuncNumberRound    fnNumberRound;
+    yapiFuncNumberFromText fnNumberFromText;
 
     yapiFuncPdbgStart        fnPdbgStart;
     yapiFuncPdbgCheckVersion fnPdbgCheckVersion;
@@ -344,6 +346,9 @@ YapiResult yapiCliDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day
                                          int32_t second, int32_t fraction, YapiErrorMsg* error);
 
 YapiResult yapiCliNumberRound(YapiNumber* n, int32_t precision, int32_t scale, YapiErrorMsg* error);
+YapiResult yapiCliNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
+                                 const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number,
+                                 YapiErrorMsg* error);
 
 void yapiInitError(YapiErrorMsg* error);
 void yapiGetErrorInfo(YapiErrorMsg* error, YapiErrorInfo* info);
