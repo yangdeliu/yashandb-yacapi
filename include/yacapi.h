@@ -429,6 +429,7 @@ YapiResult yapiColAttribute(YapiStmt* hStmt, uint16_t id, YapiColAttr attr, void
                             int32_t* stringLength);
 YapiResult yapiNumParams(YapiStmt* hStmt, int16_t* count);
 YapiResult yapiReleaseStmt(YapiStmt* hStmt);
+YapiResult yapiGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount);
 
 //-----------------------------------------------------------------------------
 // Data Function
