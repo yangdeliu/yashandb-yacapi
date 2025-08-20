@@ -385,6 +385,15 @@ YapiResult yapiCliNumParams(YacHandle hStmt, int16_t* count, YapiErrorMsg* error
     YAPI_CHECK_CLI_RETURN();
 }
 
+YapiResult yapiCliGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacGetSqlParamCount", yapiSymbols.fnGetSqlParamCount)
+    ret = (YapiResult) (*yapiSymbols.fnGetSqlParamCount)(sql, sqlLength, paramCount);
+    YAPI_CHECK_CLI_RETURN();
+}
+
 YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg* error)
 {
     YapiResult ret;

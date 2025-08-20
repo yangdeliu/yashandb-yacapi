@@ -57,6 +57,7 @@ typedef YacResult (*yapiFuncNumResultCols)(YacHandle hStmt, int16_t* count);
 typedef YacResult (*yapiFuncColAttribute)(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
                                           int32_t* stringLength);
 typedef YacResult (*yapiFuncNumParams)(YacHandle hStmt, int16_t* count);
+typedef YacResult (*yapiFuncGetSqlParamCount)(const char* sql, int32_t sqlLength, uint16_t* paramCount);
 
 typedef YapiDate (*yapiFuncNow)();
 typedef void (*yapiFuncNumberFromInt32)(YapiNumber* n, int32_t v);
@@ -174,6 +175,7 @@ typedef struct StYapiSymbols {
     yapiFuncNumResultCols       fnNumResultCols;
     yapiFuncColAttribute        fnColAttribute;
     yapiFuncNumParams           fnNumParams;
+    yapiFuncGetSqlParamCount    fnGetSqlParamCount;
 
     yapiFuncNow             fnNow;
     yapiFuncNumberFromInt32 fnNumberFromInt32;
@@ -310,6 +312,7 @@ YapiResult yapiCliNumResultCols(YacHandle hStmt, int16_t* count, YapiErrorMsg* e
 YapiResult yapiCliColAttribute(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
                                int32_t* stringLength, YapiErrorMsg* error);
 YapiResult yapiCliNumParams(YacHandle hStmt, int16_t* count, YapiErrorMsg* error);
+YapiResult yapiCliGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount, YapiErrorMsg* error);
 
 YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg* error);
 
