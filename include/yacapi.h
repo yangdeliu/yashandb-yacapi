@@ -29,6 +29,7 @@ typedef void*   YapiPointer;
 typedef struct StYapiConnect YapiConnect;
 typedef struct StYapiStmt    YapiStmt;
 typedef struct StYapiEnv     YapiEnv;
+typedef struct StYapiConnectPool YapiConnectPool;
 
 #pragma pack(4)
 #define YAC_NUMBER_SIZE 20
@@ -180,6 +181,7 @@ typedef enum EnYapiHandleType {
     YAPI_HANDLE_STMT = 3,
     YAPI_HANDLE_DESC = 4,
     YAPI_HANDLE_PUMP = 5,
+    YAPI_HANDLE_CONN_POOL = 6,
     __YAPI_HANDLE_COUNT__
 } YapiHandleType;
 
@@ -404,7 +406,16 @@ YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, i
                            int32_t* stringLength);
 YapiResult yapiAllocConnect(YapiEnv* env, YapiConnect** hConn);
 YapiResult yapiConnect2(YapiConnect* hConn, const char* url, int16_t urlLength, const char* user, int16_t userLength,
-                       const char* password, int16_t passwordLengt);
+                       const char* password, int16_t passwordLength);
+
+YapiResult yapiAllocConnectionPool(YapiEnv* env, YapiConnectPool** hConnPool);
+YapiResult yapiReleaseConnectionPool(YapiConnectPool* hConnPool);
+YapiResult yapiConnectionPoolCreate(YapiConnectPool* hConnPool, const char* url, int16_t urlLength,
+                                    uint32_t min, uint32_t max, uint32_t increment, const char* user, int16_t userLength,
+                                    const char* password, int16_t passwordLength, uint32_t mode);
+YapiResult yapiConnectionGet(YapiConnectPool* hConnPool, YapiConnect** hConn);
+YapiResult yapiConnectionGiveBack(YapiConnect* hConn);
+YapiResult yapiConnectionPoolDestroy(YapiConnectPool* hConnPool, uint32_t mode);
 
 //-----------------------------------------------------------------------------
 // Statment Function
