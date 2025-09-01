@@ -143,6 +143,13 @@ typedef YacResult (*yapiFuncPdbgGetVarValue)(YacHandle hStmt, uint32_t id, uint3
 typedef YacResult (*yapiFuncPdbgGetBreakpointAttrs)(YacHandle hStmt, uint32_t id, YapiDebugBpAttr attr, void* value,
                                                     int32_t bufLen, int32_t* stringLength);
 
+typedef YacResult (*yapiFuncConnectionPoolCreate)(YacHandle hConnPool, const char* url, int16_t urlLength,
+                                                  uint32_t min, uint32_t max, uint32_t increment, const char* user, int16_t userLength,
+                                                  const char* password, int16_t passwordLength, uint32_t mode);
+typedef YacResult (*yapiFuncConnectionGet)(YacHandle hConnPool, YacHandle hConn);
+typedef YacResult (*yapiFuncConnectionGiveBack)(YacHandle hConn);
+typedef YacResult (*yapiFuncConnectionPoolDestroy)(YacHandle hConnPool, uint32_t mode);
+
 typedef struct StYapiSymbols {
     yapiFuncAllocHandle fnAllocHandle;
     yapiFuncFreeHandler fnHandleFree;
@@ -233,6 +240,11 @@ typedef struct StYapiSymbols {
     yapiFuncPdbgGetVarAttrs        fnPdbgGetVarAttrs;
     yapiFuncPdbgGetBreakpointAttrs fnPdbgGetBreakpointAttrs;
 
+    yapiFuncConnectionPoolCreate   fnConnectionPoolCreate;
+    yapiFuncConnectionGet          fnConnectionGet;
+    yapiFuncConnectionGiveBack      fnConnectionGiveBack;
+    yapiFuncConnectionPoolDestroy  fnConnectionPoolDestroy;
+
 } YapiSymbols;
 
 #define T2S_BUFFER_SIZE 8192
@@ -269,6 +281,11 @@ typedef struct StYapiStmt {
     YapiConnect* conn;
     YacHandle    stmtHandler;
 } YapiStmt;
+
+typedef struct StYapiConnectPool {
+    YapiEnv*  env;
+    YacHandle connPoolHandler;
+} YapiConnectPool;
 
 YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg* error);
 void       yapiSetError(YapiErrorMsg* error, yapiErrorNum errorNum, const char* format, ...);
@@ -388,6 +405,13 @@ YapiResult yapiCiPdbgGetVarAttrs(YacHandle hStmt, uint32_t id, uint32_t valueTyp
                                  int32_t* indicator, YapiErrorMsg* error);
 YapiResult yapiCiPdbgGetBreakpointAttrs(YacHandle hStmt, uint32_t id, YapiDebugBpAttr attr, void* value, int32_t bufLen,
                                         int32_t* stringLength, YapiErrorMsg* error);
+
+YapiResult yapiCliConnectionPoolCreate(YacHandle hConnPool, const char* url, int16_t urlLength,
+                                       uint32_t min, uint32_t max, uint32_t increment, const char* user, int16_t userLength,
+                                       const char* password, int16_t passwordLength, uint32_t mode, YapiErrorMsg* error);
+YapiResult yapiCliConnectionGet(YacHandle hConnPool, YacHandle* hConn, YapiErrorMsg* error);
+YapiResult yapiCliConnectionGiveBack(YacHandle hConn, YapiErrorMsg* error);
+YapiResult yapiCliConnectionPoolDestroy(YacHandle hConnPool, uint32_t mode, YapiErrorMsg* error);
 
 #ifdef __cplusplus
 }

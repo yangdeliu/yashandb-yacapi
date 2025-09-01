@@ -175,3 +175,79 @@ YapiResult yapiLobFreeTemporary(YapiConnect* hConn, YapiLobLocator* loc)
 
     return yapiCliLobFreeTemporary(hConn->connHandler, loc, &error);
 }
+
+YapiResult yapiAllocConnectionPool(YapiEnv* env, YapiConnectPool** hConnPool)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    YapiConnectPool* connPool;
+    if (yapiAllocMem("ConnectionPool", 1, sizeof(YapiConnectPool), (void**)&connPool, &error) != YAPI_SUCCESS) {
+        return YAPI_ERROR;
+    }
+    if (yapiCliAllocHandle(YAPI_HANDLE_CONN_POOL, env->envHandler, &connPool->connPoolHandler, &error) != YAPI_SUCCESS) {
+        yapiFreeMem(connPool);
+        return YAPI_ERROR;
+    }
+
+    connPool->env = env;
+    *hConnPool = connPool;
+    return YAPI_SUCCESS;
+}
+
+YapiResult yapiReleaseConnectionPool(YapiConnectPool* hConnPool)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    YapiResult ret = yapiCliFreeHandle(YAPI_HANDLE_CONN_POOL, hConnPool->connPoolHandler, &error);
+    yapiFreeMem(hConnPool);
+    return ret;
+}
+
+YapiResult yapiConnectionPoolCreate(YapiConnectPool* hConnPool, const char* url, int16_t urlLength,
+                                    uint32_t min, uint32_t max, uint32_t increment, const char* user, int16_t userLength,
+                                    const char* password, int16_t passwordLength, uint32_t mode)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliConnectionPoolCreate(hConnPool->connPoolHandler, url, urlLength, min, max, increment,
+                                    user, userLength, password, passwordLength, mode, &error);
+}
+
+YapiResult yapiConnectionGet(YapiConnectPool* hConnPool, YapiConnect** hConn)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    YapiConnect* conn;
+    if (yapiAllocMem("Connection", 1, sizeof(YapiConnect), (void**)&conn, &error) != YAPI_SUCCESS) {
+        return YAPI_ERROR;
+    }
+    if (yapiCliConnectionGet(hConnPool->connPoolHandler, &conn->connHandler, &error) != YAPI_SUCCESS) {
+        yapiFreeMem(conn);
+        return YAPI_ERROR;
+    }
+
+    *hConn = conn;
+    return YAPI_SUCCESS;
+}
+
+YapiResult yapiConnectionGiveBack(YapiConnect* hConn)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    YapiResult ret = yapiCliConnectionGiveBack(hConn->connHandler, &error);
+    yapiFreeMem(hConn);
+    return ret;
+}
+
+YapiResult yapiConnectionPoolDestroy(YapiConnectPool* hConnPool, uint32_t mode)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+
+    return yapiCliConnectionPoolDestroy(hConnPool->connPoolHandler, mode, &error);
+}
+
