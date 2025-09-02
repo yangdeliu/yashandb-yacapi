@@ -155,11 +155,3 @@ YapiResult yapiNumParams(YapiStmt* hStmt, int16_t* count)
 
     return yapiCliNumParams(hStmt->stmtHandler, count, &error);
 }
-
-YapiResult yapiGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount)
-{
-    YapiErrorMsg error;
-    yapiInitError(&error);
-
-    return yapiCliGetSqlParamCount(sql, sqlLength, paramCount, &error);
-}
