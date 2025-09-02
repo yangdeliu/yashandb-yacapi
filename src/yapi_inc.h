@@ -36,6 +36,12 @@ typedef YacResult (*yapiFuncExecute)(YacHandle hStmt);
 typedef YacResult (*yapiFuncFetch)(YacHandle hStmt, uint32_t* rows);
 typedef YacResult (*yapiFuncCommit)(YacHandle hConn);
 typedef YacResult (*yapiFuncRollback)(YacHandle hConn);
+typedef YacResult (*yapiFuncPing)(YacHandle hConn, int32_t timeout);
+
+typedef YacResult (*yapiFuncParseSqlParams)(YacHandle hEnv, YacHandle* hParamList, const char* sql, int32_t sqlLength);
+typedef YacResult (*yapiFuncGetParamListCount)(YacHandle hParamList, uint32_t* count);
+typedef YacResult (*yapiFuncGetParamName)(YacHandle hParamList, uint16_t index, char* name, int32_t nameBufLen, int32_t* nameLen);
+typedef YacResult (*yapiFuncFreeParamList)(YacHandle hParamList);
 
 typedef YacResult (*yapiFuncSetConnAttr)(YacHandle hConn, YapiConnAttr attr, void* value, int32_t length);
 typedef YacResult (*yapiFuncGetConnAttr)(YacHandle hConn, YapiConnAttr attr, void* value, int32_t bufLength,
@@ -57,7 +63,6 @@ typedef YacResult (*yapiFuncNumResultCols)(YacHandle hStmt, int16_t* count);
 typedef YacResult (*yapiFuncColAttribute)(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
                                           int32_t* stringLength);
 typedef YacResult (*yapiFuncNumParams)(YacHandle hStmt, int16_t* count);
-typedef YacResult (*yapiFuncGetSqlParamCount)(const char* sql, int32_t sqlLength, uint16_t* paramCount);
 
 typedef YapiDate (*yapiFuncNow)();
 typedef void (*yapiFuncNumberFromInt32)(YapiNumber* n, int32_t v);
@@ -103,8 +108,25 @@ typedef YacResult (*yapiFuncYMIntervalSetYearMonth)(YapiYMInterval* ymInterval, 
 typedef YacResult (*yapiFuncDSIntervalSetDaySecond)(YapiDSInterval* dsInterval, int32_t day, int32_t hour,
                                                     int32_t minute, int32_t second, int32_t fraction);
 
+typedef YacResult (*yapiFuncDateTimeGetTimeZoneOffset)(YacHandle hEnv, YapiTimestamp timestamp, int8_t* hr, int8_t* mm);
+
+typedef YacResult (*yapiFuncDSIntervalFromText)(YacHandle hEnv, YapiDSInterval* dsInterval, const char* str,
+                                                uint32_t strLen);
+
+typedef YacResult (*yapiFuncYMIntervalFromText)(YacHandle hEnv, YapiYMInterval* ymInterval, const char* str,
+                                                uint32_t strLen);
+
 typedef YacResult (*yapiFuncNumberRound)(YapiNumber* n, int32_t precision, int32_t scale);
-typedef YacResult (*yapiFuncNumberFromText)(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength, const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number);
+
+typedef YacResult (*yapiFuncNumberFromText)(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
+                                            const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number);
+
+typedef YacResult (*yapiFuncNumberToText)(const YapiNumber* number, const char* fmt, uint32_t fmtLength,
+                                          const char* nlsParam, uint32_t nlsParamLength, char* str, int32_t bufLength,
+                                          int32_t* length);
+
+typedef YacResult (*yapiFuncNumberFromReal)(const YapiPointer rnum, uint32_t length, YapiNumber* number);
+typedef YacResult (*yapiFuncNumberToReal)(const YapiNumber* number, uint32_t length, YapiPointer rsl);
 
 typedef YacResult (*yapiFuncPdbgStart)(YacHandle stmt, uint64_t objId, uint16_t subId);
 
@@ -167,6 +189,12 @@ typedef struct StYapiSymbols {
     yapiFuncFetch         fnFetch;
     yapiFuncCommit        fnCommit;
     yapiFuncRollback      fnRollback;
+    yapiFuncPing          fnPing;
+
+    yapiFuncParseSqlParams     fnParseSqlParams;
+    yapiFuncGetParamListCount  fnGetParamListCount;
+    yapiFuncGetParamName       fnGetParamName;
+    yapiFuncFreeParamList      fnFreeParamList;
 
     yapiFuncSetEnvAttr  fnSetEnvAttr;
     yapiFuncGetEnvAttr  fnGetEnvAttr;
@@ -182,7 +210,6 @@ typedef struct StYapiSymbols {
     yapiFuncNumResultCols       fnNumResultCols;
     yapiFuncColAttribute        fnColAttribute;
     yapiFuncNumParams           fnNumParams;
-    yapiFuncGetSqlParamCount    fnGetSqlParamCount;
 
     yapiFuncNow             fnNow;
     yapiFuncNumberFromInt32 fnNumberFromInt32;
@@ -215,9 +242,16 @@ typedef struct StYapiSymbols {
     yapiFuncTimestampSetTimestamp  fnTimestampSetTimestamp;
     yapiFuncYMIntervalSetYearMonth fnYMIntervalSetYearMonth;
     yapiFuncDSIntervalSetDaySecond fnDSIntervalSetDaySecond;
+    yapiFuncDSIntervalFromText     fnDSIntervalFromText;
+    yapiFuncYMIntervalFromText     fnYMIntervalFromText;
+
+    yapiFuncDateTimeGetTimeZoneOffset fnDateTimeGetTimeZoneOffset;
 
     yapiFuncNumberRound    fnNumberRound;
     yapiFuncNumberFromText fnNumberFromText;
+    yapiFuncNumberToText   fnNumberToText;
+    yapiFuncNumberFromReal fnNumberFromReal;
+    yapiFuncNumberToReal   fnNumberToReal;
 
     yapiFuncPdbgStart        fnPdbgStart;
     yapiFuncPdbgCheckVersion fnPdbgCheckVersion;
@@ -308,6 +342,12 @@ YapiResult yapiCliSetConnAttr(YacHandle hConn, YapiConnAttr attr, void* value, i
 YapiResult yapiCliGetConnAttr(YacHandle hConn, YapiConnAttr attr, void* value, int32_t bufLength, int32_t* stringLength,
                               YapiErrorMsg* error);
 YapiResult yapiCliCancel(YacHandle hConn, YapiErrorMsg* error);
+YapiResult yapiCliPing(YacHandle hConn, int32_t timeout, YapiErrorMsg* error);
+
+YapiResult yapiCliParseSqlParams(YacHandle hEnv, YacHandle* paramList, const char* sql, int32_t sqlLength, YapiErrorMsg* error);
+YapiResult yapiCliGetParamListCount(YacHandle hParamList, uint32_t* count, YapiErrorMsg* error);
+YapiResult yapiCliGetParamName(YacHandle hParamList, uint16_t index, char* name, int32_t nameBufLen, int32_t* nameLen, YapiErrorMsg* error);
+YapiResult yapiCliFreeParamList(YacHandle hParamList, YapiErrorMsg* error);
 
 YapiResult yapiCliDirectExecute(YacHandle hStmt, const char* sql, int32_t sqlLength, YapiErrorMsg* error);
 YapiResult yapiCliPrepare(YacHandle hStmt, const char* sql, int32_t sqlLength, YapiErrorMsg* error);
@@ -329,7 +369,6 @@ YapiResult yapiCliNumResultCols(YacHandle hStmt, int16_t* count, YapiErrorMsg* e
 YapiResult yapiCliColAttribute(YacHandle hStmt, uint16_t id, YapiColAttr attr, void* value, int32_t bufLen,
                                int32_t* stringLength, YapiErrorMsg* error);
 YapiResult yapiCliNumParams(YacHandle hStmt, int16_t* count, YapiErrorMsg* error);
-YapiResult yapiCliGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount, YapiErrorMsg* error);
 
 YapiResult yapiCliGetDateStruct(YapiDate date, YapiDateStruct* ds, YapiErrorMsg* error);
 
@@ -361,14 +400,32 @@ YapiResult yapiCliShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8
 YapiResult yapiCliTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day,
                                         uint8_t hour, uint8_t minute, uint8_t second, uint32_t fraction,
                                         YapiErrorMsg* error);
+YapiResult yapiCliDateTimeGetTimeZoneOffset(YacHandle hEnv, YapiTimestamp timestamp, int8_t* hr, int8_t* mm,
+                                            YapiErrorMsg* error);
+
 YapiResult yapiCliYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month, YapiErrorMsg* error);
 YapiResult yapiCliDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
                                          int32_t second, int32_t fraction, YapiErrorMsg* error);
 
+YapiResult yapiCliDSIntervalFromText(YacHandle hEnv, YapiDSInterval* dsInterval, const char* str, uint32_t strLen,
+                                     YapiErrorMsg* error);
+
+YapiResult yapiCliYMIntervalFromText(YacHandle hEnv, YapiYMInterval* ymInterval, const char* str, uint32_t strLen,
+                                     YapiErrorMsg* error);
+
 YapiResult yapiCliNumberRound(YapiNumber* n, int32_t precision, int32_t scale, YapiErrorMsg* error);
+
 YapiResult yapiCliNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
                                  const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number,
                                  YapiErrorMsg* error);
+
+YapiResult yapiCliNumberToText(const YapiNumber* number, const char* fmt, uint32_t fmtLength, const char* nlsParam,
+                               uint32_t nlsParamLength, char* str, int32_t bufLength, int32_t* length,
+                               YapiErrorMsg* error);
+
+YapiResult yapiCliNumberFromReal(const YapiPointer rnum, uint32_t length, YapiNumber* number, YapiErrorMsg* error);
+
+YapiResult yapiCliNumberToReal(const YapiNumber* number, uint32_t length, YapiPointer rsl, YapiErrorMsg* error);
 
 void yapiInitError(YapiErrorMsg* error);
 void yapiGetErrorInfo(YapiErrorMsg* error, YapiErrorInfo* info);

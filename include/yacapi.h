@@ -77,8 +77,8 @@ typedef enum EnYapiType {
     YAPI_TYPE_SHORTDATE = 14,
     YAPI_TYPE_SHORTTIME = 15,
     YAPI_TYPE_TIMESTAMP = 16,
-    YAPI_TYPE_TIMESTAMP_TZ = 17,
-    YAPI_TYPE_TIMESTAMP_LTZ = 18,
+    YAPI_TYPE_TIMESTAMP_LTZ = 17,
+    YAPI_TYPE_TIMESTAMP_TZ = 18,
     YAPI_TYPE_YM_INTERVAL = 19,
     YAPI_TYPE_DS_INTERVAL = 20,
     // 21-23 reversed
@@ -217,6 +217,11 @@ typedef enum EnYapiConnAttr {
     YAPI_ATTR_AUTOTRACE = 10,
     YAPI_ATTR_CREDT = 11,
     YAPI_ATTR_MAX_CHARSET_RATIO = 12,
+    YAPI_ATTR_TAF_ENABLED = 14,
+    YAPI_ATTR_TAF_CALLBACK = 15,
+    YAPI_ATTR_MAX_NCHARSET_RATIO = 17,
+    YAPI_ATTR_HEARTBEAT_ENABLED = 18,
+    YAPI_ATTR_SERVER_STATUS = 22,
     __YAPI_CONN_ATTR_END__
 } YapiConnAttr;
 
@@ -416,6 +421,17 @@ YapiResult yapiConnectionPoolCreate(YapiConnectPool* hConnPool, const char* url,
 YapiResult yapiConnectionGet(YapiConnectPool* hConnPool, YapiConnect** hConn);
 YapiResult yapiConnectionGiveBack(YapiConnect* hConn);
 YapiResult yapiConnectionPoolDestroy(YapiConnectPool* hConnPool, uint32_t mode);
+                        const char* password, int16_t passwordLengt);
+
+YapiResult yapiPing(YapiConnect* hConn, int32_t timeout);
+
+//-----------------------------------------------------------------------------
+// SQL Cli Parser Function
+//-----------------------------------------------------------------------------
+YapiResult yapiParseSqlParams(YapiEnv* hEnv, YapiPointer* paramList, const char* sql, int32_t sqlLength);
+YapiResult yapiGetParamListCount(YapiPointer hParamList, uint32_t* count);
+YapiResult yapiGetParamName(YapiPointer hParamList, uint16_t index, char* name, int32_t nameBufLen, int32_t* nameLen);
+YapiResult yapiFreeParamList(YapiPointer hParamList);
 
 //-----------------------------------------------------------------------------
 // Statment Function
@@ -440,7 +456,6 @@ YapiResult yapiColAttribute(YapiStmt* hStmt, uint16_t id, YapiColAttr attr, void
                             int32_t* stringLength);
 YapiResult yapiNumParams(YapiStmt* hStmt, int16_t* count);
 YapiResult yapiReleaseStmt(YapiStmt* hStmt);
-YapiResult yapiGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount);
 
 //-----------------------------------------------------------------------------
 // Data Function
@@ -460,14 +475,28 @@ YapiResult yapiShortTimeSetShortTime(YapiShortTime* time, uint8_t hour, uint8_t 
                                      uint32_t fraction);
 YapiResult yapiTimestampSetTimestamp(YapiTimestamp* timestamp, int16_t year, uint8_t month, uint8_t day, uint8_t hour,
                                      uint8_t minute, uint8_t second, uint32_t fraction);
+
+YapiResult yapiDateTimeGetTimeZoneOffset(YapiEnv* env, YapiTimestamp timestamp, int8_t* hr, int8_t* mm);
+
 YapiResult yapiYMIntervalSetYearMonth(YapiYMInterval* ymInterval, int32_t year, int32_t month);
 YapiResult yapiDSIntervalSetDaySecond(YapiDSInterval* dsInterval, int32_t day, int32_t hour, int32_t minute,
                                       int32_t second, int32_t fraction);
 
+YapiResult yapiDSIntervalFromText(YapiEnv* hEnv, YapiDSInterval* dsInterval, const char* str, uint32_t strLen);
+
+YapiResult yapiYMIntervalFromText(YapiEnv* hEnv, YapiYMInterval* ymInterval, const char* str, uint32_t strLen);
+
 YapiResult yapiNumberRound(YapiNumber* n, int32_t precision, int32_t scale);
+
+YapiResult yapiNumberToText(const YapiNumber* number, const char* fmt, uint32_t fmtLength, const char* nlsParam,
+                            uint32_t nlsParamLength, char* str, int32_t bufLength, int32_t* length);
+
 YapiResult yapiNumberFromText(const char* str, uint32_t strLength, const char* fmt, uint32_t fmtLength,
                               const char* nlsParam, uint32_t nlsParamLength, YapiNumber* number);
 
+YapiResult yapiNumberFromReal(const YapiPointer rnum, uint32_t length, YapiNumber* number);
+
+YapiResult yapiNumberToReal(const YapiNumber* number, uint32_t length, YapiPointer rsl);
 //-----------------------------------------------------------------------------
 // Lob Function
 //-----------------------------------------------------------------------------

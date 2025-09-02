@@ -50,12 +50,7 @@ YapiResult yapiConnect(YapiEnv* env, const char* url, int16_t urlLength, const c
         return YAPI_ERROR;
     }
 
-    if(yapiConnect2(*hConn, url, urlLength, user, userLength, password, passwordLength) != YAPI_SUCCESS) {
-        // when hConn was be free but hConn is not NULL, yaspy should try to double free this pointer
-        *hConn = NULL;
-        return YAPI_ERROR;
-    }
-    return YAPI_SUCCESS;
+    return yapiConnect2(*hConn, url, urlLength, user, userLength, password, passwordLength);
 }
 
 YapiResult yapiDisconnect(YapiConnect* hConn)
@@ -109,6 +104,41 @@ YapiResult yapiGetConnAttr(YapiConnect* hConn, YapiConnAttr attr, void* value, i
     yapiInitError(&error);
     return yapiCliGetConnAttr(hConn->connHandler, attr, value, bufLength, stringLength, &error);
 }
+
+YapiResult yapiPing(YapiConnect* hConn, int32_t timeout)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliPing(hConn->connHandler, timeout, &error);
+}
+
+YapiResult yapiParseSqlParams(YapiEnv* hEnv, YapiPointer* paramList, const char* sql, int32_t sqlLength)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliParseSqlParams(hEnv->envHandler, paramList, sql, sqlLength, &error);
+}
+YapiResult yapiGetParamListCount(YapiPointer hParamList, uint32_t* count)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliGetParamListCount(hParamList, count, &error);
+}
+
+YapiResult yapiGetParamName(YapiPointer hParamList, uint16_t index, char* name, int32_t nameBufLen, int32_t* nameLen)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliGetParamName(hParamList, index, name, nameBufLen, nameLen, &error);
+}
+
+YapiResult yapiFreeParamList(YapiPointer hParamList)
+{
+    YapiErrorMsg error;
+    yapiInitError(&error);
+    return yapiCliFreeParamList(hParamList, &error);
+}
+
 
 void yapiGetLastError(YapiErrorInfo* info)
 {
