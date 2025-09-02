@@ -421,7 +421,6 @@ YapiResult yapiConnectionPoolCreate(YapiConnectPool* hConnPool, const char* url,
 YapiResult yapiConnectionGet(YapiConnectPool* hConnPool, YapiConnect** hConn);
 YapiResult yapiConnectionGiveBack(YapiConnect* hConn);
 YapiResult yapiConnectionPoolDestroy(YapiConnectPool* hConnPool, uint32_t mode);
-                        const char* password, int16_t passwordLengt);
 
 YapiResult yapiPing(YapiConnect* hConn, int32_t timeout);
 
