@@ -306,6 +306,15 @@ YapiResult yapiCliFreeParamList(YacHandle hParamList, YapiErrorMsg* error)
     YAPI_CHECK_CLI_RETURN();
 }
 
+YapiResult yapiCliGetSqlParamCount(const char* sql, int32_t sqlLength, uint16_t* paramCount, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacGetSqlParamCount", yapiSymbols.fnGetSqlParamCount)
+    ret = (YapiResult) (*yapiSymbols.fnGetSqlParamCount)(sql, sqlLength, paramCount);
+    YAPI_CHECK_CLI_RETURN();
+}
+
 YapiResult yapiCliDirectExecute(YacHandle hStmt, const char* sql, int32_t sqlLength, YapiErrorMsg* error)
 {
     YapiResult ret;
@@ -896,4 +905,76 @@ YapiResult yapiCliConnectionPoolDestroy(YacHandle hConnPool, uint32_t mode, Yapi
 {
     YAPI_LOAD_SYMBOL("yacConnectionPoolDestroy", yapiSymbols.fnConnectionPoolDestroy)
     return YAPI_SUCCESS;
+}
+
+YapiResult yapiCliDescAlloc2(YacHandle hEnv, void** desc, YapiDescType type, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDescAlloc2", yapiSymbols.fnDescAlloc2)
+    ret = (YapiResult) (*yapiSymbols.fnDescAlloc2)(hEnv, desc, type);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliDescFree2(YacHandle hEnv, void** desc, YapiDescType type, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacDescFree2", yapiSymbols.fnDescFree2)
+    ret = (YapiResult) (*yapiSymbols.fnDescFree2)(hEnv, desc, type);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorFromText(YapiVector* vector, YapiVectorFormat format, uint16_t dim, char* text, uint32_t textlen, uint32_t mode, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("YapiVectorFromText", yapiSymbols.fnVectorFromText)
+    ret = (YapiResult) (*yapiSymbols.fnVectorFromText)(vector, format, dim, text, textlen, mode);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorFromArray(YapiVector* vector, YapiVectorFormat format, uint16_t dim, uint8_t* array, uint32_t arrayLen, uint32_t mode, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacVectorFromArray", yapiSymbols.fnVectorFromArray)
+    ret = (YapiResult) (*yapiSymbols.fnVectorFromArray)(vector, format, dim, array, arrayLen, mode);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorToText(YapiVector* vector, char* text, uint32_t* textlen, uint32_t mode, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacVectorToText", yapiSymbols.fnVectorToText)
+    ret = (YapiResult) (*yapiSymbols.fnVectorToText)(vector, text, textlen, mode);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorToArray(YapiVector* vector, YapiVectorFormat format, uint16_t* dim, uint8_t* array, uint32_t* arrayLen, uint32_t mode, YapiErrorMsg* error)
+{
+    YapiResult ret;
+
+    YAPI_LOAD_SYMBOL("yacVectorToArray", yapiSymbols.fnVectorToArray)
+    ret = (YapiResult) (*yapiSymbols.fnVectorToArray)(vector, format, dim, array, arrayLen, mode);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorGetFormat(YapiVector* vector, YapiVectorFormat* format, YapiErrorMsg* error)
+{
+    YapiResult ret;
+    
+    YAPI_LOAD_SYMBOL("yacVectorGetFormat", yapiSymbols.fnVectorGetFormat)
+    ret = (YapiResult) (*yapiSymbols.fnVectorGetFormat)(vector, format);
+    YAPI_CHECK_CLI_RETURN();
+}
+
+YapiResult yapiCliVectorGetDimension(YapiVector* vector, uint16_t* dim, YapiErrorMsg* error)
+{
+    YapiResult ret;
+    
+    YAPI_LOAD_SYMBOL("yacVectorGetDimension", yapiSymbols.fnVectorGetDimension)
+    ret = (YapiResult) (*yapiSymbols.fnVectorGetDimension)(vector, dim);
+    YAPI_CHECK_CLI_RETURN();
 }
