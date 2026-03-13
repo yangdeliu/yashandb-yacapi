@@ -109,6 +109,17 @@ static int yapiLoadSymbol(const char* symbolName, void** symbol, YapiErrorMsg* e
 
 YapiResult yapiOpenDynamicLib(char* libName, YapiPointer* handler, YapiErrorMsg* error)
 {
+    char* homeDir = getenv("HOME");
+    if (homeDir != NULL) {
+        char customPath[FILENAME_MAX];
+        snprintf(customPath, sizeof(customPath), "%s/.yashandb/client/lib/%s", homeDir, libName);
+        *handler = dlopen(customPath, RTLD_LAZY);
+        if (*handler != NULL) {
+            yapiLibHandle = *handler;
+            return YAPI_SUCCESS;
+        }
+    }
+
     *handler = dlopen(libName, RTLD_LAZY);
     if (!*handler) {
         char* errMsg = dlerror();
